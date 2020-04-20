@@ -2,7 +2,12 @@ package com.abhinash.shoppingdashboard.util;
 
 public class CommonConstants {
 
-    public static final String USER_PREFIX = "MDMC_";
+    public static final String USER_PREFIX = "BU-";
+
+    public static final  String ISSUER = "ABHI";
+
+    public static final String AUDIENCE = "SHOPPING";
+
 
     public static final String DOCUMENT_PREFIX = "ASF";
 
