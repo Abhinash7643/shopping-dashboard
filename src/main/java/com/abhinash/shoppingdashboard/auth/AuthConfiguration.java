@@ -26,18 +26,20 @@ public class AuthConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    JwtUtil tokenProvider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-
     //For authentication
-    @Autowired
-    public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-        auth.userDetailsService( userDetailsService )
-                .passwordEncoder( passwordEncoder() );
+    @Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
     }
 
 //    @Bean
@@ -51,36 +53,19 @@ public class AuthConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    @Autowired
-    private JwtUtil tokenProvider;
 
-    //for outherization
+    //this class is all about which path you want to allow and which path you want to secure
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
-                // Disable CSRF (cross site request forgery)
-                // Cross-origin resource sharing
                 .cors().and().csrf().disable()
-                // handle an authorized attempts
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
-                // make sure we use stateless session; session won't be used to store user's state.
-                // No session will be created or used by spring security
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-//                .authorizeRequests().antMatchers("/*/greet").permitAll()
-//                .antMatchers("/api/test/**").permitAll()
-////                .anyRequest().authenticated();
                 .antMatcher("/*/secure/**").authorizeRequests()
                 .antMatchers("/*/secure/**").authenticated()
                 .and().addFilter(new JwtAuthorizationFilter(authenticationManager(), tokenProvider));
-
-
-                // Add a filter to validate user credentials and add token in the response header
-
-                // What's the authenticationManager()?
-                // An object provided by WebSecurityConfigurerAdapter, used to authenticate the user passing user's credentials
-                // The filter needs this auth manager to authenticate the user.
-
+//                .and().addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }

@@ -34,7 +34,7 @@ import java.util.Set;
  * Created by rajeevkumarsingh on 02/08/17.
  */
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController extends AbstractBaseController {
 
     @Autowired
@@ -59,6 +59,7 @@ public class AuthController extends AbstractBaseController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         // Perform the security
+        //spring security will call loadUserByUsername Method and perform authentication
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsernameOrEmail(),

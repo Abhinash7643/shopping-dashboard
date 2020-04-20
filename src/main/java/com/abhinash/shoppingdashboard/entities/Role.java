@@ -1,30 +1,20 @@
 package com.abhinash.shoppingdashboard.entities;
 
-import com.abhinash.shoppingdashboard.util.RoleName;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Document(collection = "user_roles")
 public class Role {
 
     @Id
-    private Long id;
+    private String id;
 
-    private RoleName roleName;
+    private String roleName;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public RoleName getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(RoleName roleName) {
-        this.roleName = roleName;
-    }
 }

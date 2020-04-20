@@ -32,7 +32,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         // 1. get the authentication header. Tokens are supposed to be passed in the authentication header
         String authToken = tokenProvider.resolveToken(httpServletRequest);
-        String username;
         if (StringUtils.hasText(authToken) && tokenProvider.validateToken(authToken)) {
             String userId = tokenProvider.getUserIdFromJWT(authToken);
 

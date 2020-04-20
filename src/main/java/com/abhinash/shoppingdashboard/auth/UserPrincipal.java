@@ -43,7 +43,7 @@ public class UserPrincipal implements UserDetails {
         //so either while declaring role declare as ROLE_USER, ROLE_ADMIN   or use "ROLE_" + appUser.getRole() in
         // SimpleGrantedAuthority below
         List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
-                new SimpleGrantedAuthority(role.getRoleName().name())
+                new SimpleGrantedAuthority(role.getRoleName())
         ).collect(Collectors.toList());
 
 

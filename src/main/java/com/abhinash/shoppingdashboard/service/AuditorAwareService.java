@@ -12,6 +12,7 @@ import java.util.Optional;
 @Component
 public class AuditorAwareService implements AuditorAware<String> {
 
+    //implementing getCurrentAuditor  to mark entity objects created and modified.
     @Autowired
     AuthenticationFacade authenticationFacade;
 

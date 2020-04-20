@@ -13,7 +13,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collation = "users")
+@Document(collection = "users")
 public class User {
 
     @Id
