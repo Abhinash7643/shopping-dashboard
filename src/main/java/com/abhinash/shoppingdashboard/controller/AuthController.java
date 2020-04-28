@@ -77,7 +77,7 @@ public class AuthController extends AbstractBaseController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/register-user")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         userRepository.existsByUsername(signUpRequest.getUsername()).
                 orElseThrow(() -> new MyException("Username is already taken!" + signUpRequest.getEmail()));
