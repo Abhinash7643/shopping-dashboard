@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
@@ -22,6 +23,9 @@ public class JwtUtil {
 
     @Value("${app.jwtSecret}")
     private String secretKey;
+
+    @Value("${jwt.expiration.time}")
+    private Long jwtExpirationInMillis;
 
     @PostConstruct
     protected void init() {
@@ -44,7 +48,6 @@ public class JwtUtil {
     public String generateToken(Authentication authentication) {
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
 //        Claims claims = Jwts.claims().setSubject(username);
 //        claims.put("auth", roles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority())).filter(Objects::nonNull).collect(Collectors.toList()));
         return Jwts.builder()
@@ -52,11 +55,21 @@ public class JwtUtil {
                 .setIssuer(CommonConstants.ISSUER)
                 .setAudience(CommonConstants.AUDIENCE)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))
                 .setSubject(userPrincipal.getId())
                 .signWith(io.jsonwebtoken.SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
+
+    public String generateTokenWithUserName(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(Date.from(Instant.now()))
+                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS512, secretKey)
+                .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))
+                .compact();
+    }
+
 
     public String getUserIdFromJWT(String token) {
         Claims claims = Jwts.parser()
@@ -74,18 +87,6 @@ public class JwtUtil {
         return null;
     }
 
-//
-//    public Boolean validateToken(String token, UserDetails userDetails) {
-//        User user = (User) userDetails;
-//        final String username = getUsernameFromToken(token);
-//        final Date created = getIssuedAtDateFromToken(token);
-//        return (
-//                username != null &&
-//                        username.equals(userDetails.getUsername()) &&
-//                        !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
-//        );
-//    }
-
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(authToken);
@@ -102,6 +103,10 @@ public class JwtUtil {
             logger.error("JWT claims string is empty.");
         }
         return false;
+    }
+
+    public Long getJwtExpirationInMillis() {
+        return jwtExpirationInMillis;
     }
 
     public String getUserNameFromJwtToken(String token) {
